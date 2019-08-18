@@ -1,5 +1,5 @@
 {
-  "name": "bulkupdate",
+  "name": "pincolor",
   "version": "1.0.0",
   "description": "Trc plugin for bulk updating",
   "main": "index.js",
@@ -16,7 +16,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "trc-analyze": "^1.6.0",
-    "trc-react": "^1.0.0",
+    "trc-react": "file:../2/trc-react/trc-react-1.0.1.tgz",
     "trc-sheet": "^1.11.0"
   },
   "devDependencies": {

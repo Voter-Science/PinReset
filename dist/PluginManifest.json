@@ -1,10 +1,10 @@
 {
-    "Id": "BulkUpdate",
-    "Name": "BulkUpdate",
+    "Id": "PinColor",
+    "Name": "PinColor",
     "Author" :  "Voter-Science",
     "Website" :  "https://github.com/Voter-Science/SetTopology",
     "HelpLink" : "https://blog.voter-science.com/2017/06/12/how-to-filter-lists/",
-    "Description": "Bulk update values",        
+    "Description": "Set pin colors",        
     "Version": "1.0.0",
     "Tags": [ "manage", "_hidden" ]
 }
