@@ -48,6 +48,7 @@ export class App extends React.Component<{}, {
     }
 
     // generate a TRC expression to handle the color. USe this for the new XColor column. 
+    // This will look like: switch(Party, 'value1', 'r', 'value2','b')
     private getColorExpression() {
         var expr = "switch(" + this.state._ci.Name;
         for (var name in this.state._mapping) {
@@ -66,8 +67,12 @@ export class App extends React.Component<{}, {
         var expr = this.getColorExpression();
 
         // SheetOps will pause the UI and handle errors. 
-        _trcGlobal.SheetOps.beginAdminOp((admin: trcSheet.SheetAdminClient) => {
-            return admin.postNewExpressionAsync("XColor", expr);
+        _trcGlobal.SheetOps.beginAdminOp((admin: trcSheet.SheetAdminClient) => {            
+            // Calling postNewExpressionAsync multiple times may not forcibly update the expression.
+            // So first delete the column to force updated.  
+            // It's safe to delete a column that doesn't exist. 
+            return admin.postOpDeleteQuestionAsync("XColor").then( ()=> 
+                admin.postNewExpressionAsync("XColor", expr));
         });
     }
 
