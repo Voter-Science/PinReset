@@ -28,17 +28,22 @@ export class App extends React.Component<{}, {
             _ci: undefined,
             _mapping: {}
         };
+        
+        this.renderValues = this.renderValues.bind(this);
+        this.renderColorChoices = this.renderColorChoices.bind(this);
+        this.renderCurrentColor = this.renderCurrentColor.bind(this);
         this.renderBody1 = this.renderBody1.bind(this);
         this.columnUpdate = this.columnUpdate.bind(this);
         this.onColorChanged = this.onColorChanged.bind(this);
         this.onApply = this.onApply.bind(this);
-        this.onRemoveColor = this.onRemoveColor.bind(this);
+        this.onRemoveColors = this.onRemoveColors.bind(this);
     }
 
     private columnUpdate(ci: trcSheet.IColumnInfo) {
         // This will cause a re-render of renderColorChoices
         this.setState({
-            _ci: ci
+            _ci: ci,
+            _mapping: {} // reset previous color mappings. 
         });
     }
 
@@ -67,10 +72,9 @@ export class App extends React.Component<{}, {
     }
 
     // Remove the XColor column. 
-    private onRemoveColor(): void {
+    private onRemoveColors() {
         var ok = confirm("Are you sure you want to remove the custom pin coloring from this sheet? (this will delete the XColor column)");
-        if (!ok)
-        {
+        if (!ok) {
             return;
         }
         _trcGlobal.SheetOps.beginAdminOp(admin => {
@@ -88,12 +92,12 @@ export class App extends React.Component<{}, {
     private renderColorChoices(columnValue: string) {
         return <select onChange={x => this.onColorChanged(x, columnValue)} >
             <option key="k1" value="">(none)</option>
-            <option key="k4" value="r">Red</option>
-            <option key="k2" value="g">Green</option>
-            <option key="k3" value="b">Blue</option>
-            <option key="k2" value="p">Purple</option>
-            <option key="k2" value="o">Orange</option>
-            <option key="k2" value="y">Yellow</option>
+            <option key="k2" value="r">Red</option>
+            <option key="k3" value="g">Green</option>
+            <option key="k4" value="b">Blue</option>
+            <option key="k5" value="p">Purple</option>
+            <option key="k6" value="o">Orange</option>
+            <option key="k7" value="y">Yellow</option>
         </select>
     }
 
@@ -105,40 +109,58 @@ export class App extends React.Component<{}, {
             return <div>(select a column)</div>
         }
 
-        var vals = ci.PossibleValues;
+        // Take union of possible values in sheet contents plus question. 
+        var vals: string[];
+        {
+            var set = new bcl.HashCount();
+            _trcGlobal._contents[ci.Name].map(x => set.Add(x));
+            if (ci.PossibleValues) {
+                ci.PossibleValues.map(x => set.Add(x));
+            }
+            vals = set.getKeys();
+        }
 
-        return <table>
-            <thead>
-                <tr>
-                    <td>Value</td>
-                    <td>Color</td>
-                </tr>
-            </thead>
-            <tbody>
-                {ci.PossibleValues.map((columnValue, idx) =>
-                    <tr key={idx}>
-                        <td>
-                            {columnValue}
-                        </td>
-                        <td>
-                            {this.renderColorChoices(columnValue)}
-                        </td>
+        if (vals.length > 10) {
+            return <div>Column has too many ({vals.length}) distinct values. </div>
+        }
+
+        // var vals = ci.PossibleValues;
+
+        return <div>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Value</td>
+                        <td>Color</td>
                     </tr>
-                )}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {vals.map((columnValue, idx) =>
+                        <tr key={idx}>
+                            <td>
+                                {columnValue}
+                            </td>
+                            <td>
+                                {this.renderColorChoices(columnValue)}
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+            <button onClick={this.onApply}>Apply!</button>
+        </div>
     }
 
     // Show the current coloring scheme.
     // Caller has already validated it has one. 
     private renderCurrentColor(ci: trcSheet.IColumnInfo) {
-        return  <div>
-            { ci.Expression ? 
-                <div>Current custom color scheme is: {ci.Expression}</div>  : 
-                <div>(sheet has an existing color scheme)</div>        
+        return <div>
+            {ci.Expression ?
+                <div>Current custom color scheme is: {ci.Expression}</div> :
+                <div>(sheet has an existing color scheme)</div>
             }
-            <button onClick={this.onRemoveColor}>Remove custom coloring!</button>
-        </div>        
+            <button onClick={this.onRemoveColors}>Remove custom coloring!</button>            
+        </div>
     }
 
     private renderBody1() {
@@ -149,19 +171,20 @@ export class App extends React.Component<{}, {
                     Sheet does not have a custom color scheme
                 </ColumnCheck>
                 <div>------</div>
-                <div>Set color scheme based on a column's values:</div>
+                <div>Set a custom color scheme based on a column's values:</div>
                 <ColumnSelector Include={ci => true} OnChange={this.columnUpdate} ></ColumnSelector>
                 {this.renderValues()}
-                <button onClick={this.onApply}>Apply!</button>
+
             </div>
         }
     }
 
     render() {
+        // fetch contents so we can get possible values from the contents . 
         return <PluginShell title="PinColor" details="Set custom pin colors">
             <SheetContainer
                 onReady={this.renderBody1}
-                fetchContents={false}
+                fetchContents={true}
                 requireTop={true}>
             </SheetContainer>
         </PluginShell>
