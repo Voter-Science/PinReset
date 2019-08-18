@@ -2,7 +2,7 @@
     "Id": "PinColor",
     "Name": "PinColor",
     "Author" :  "Voter-Science",
-    "Website" :  "https://github.com/Voter-Science/SetTopology",
+    "Website" :  "https://github.com/Voter-Science/PinColor",
     "HelpLink" : "https://blog.voter-science.com/2017/06/12/how-to-filter-lists/",
     "Description": "Set pin colors",        
     "Version": "1.0.0",
