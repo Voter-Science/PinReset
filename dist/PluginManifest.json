@@ -1,10 +1,10 @@
 {
-    "Id": "PinColor",
-    "Name": "PinColor",
+    "Id": "PinReset",
+    "Name": "PinReset",
     "Author" :  "Voter-Science",
     "Website" :  "https://github.com/Voter-Science/PinColor",
     "HelpLink" : "https://blog.voter-science.com/2017/06/12/how-to-filter-lists/",
-    "Description": "Set pin colors",        
+    "Description": "Reset pins",        
     "Version": "1.0.0",
     "Tags": [ "manage", "_hidden" ]
 }

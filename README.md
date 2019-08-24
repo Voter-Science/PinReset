@@ -1,8 +1,6 @@
 # PinColor
-Plugin for colorizing pins. 
+Plugin for Reseting pins. 
 
-Clients will check for an 'XColor' column, and if present, use it colorize pins. 
-A common technique is to set XColor to an expression based off other columns. The switch() expression is particularly useful here. 
-For example, XColor := switch(gender, 'F', 'green', 'M', 'yellow') will colorize based on gender. 
+This will queue a maintenance operation to reset all the pins in this sheet. The operation queues applies a delta that clears out the ResultOfContact field. 
 
 This is based on the trc react templates. See https://github.com/Voter-Science/trc-react for more details.
