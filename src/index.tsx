@@ -8,6 +8,8 @@ import { SheetContainer, IMajorState } from 'trc-react/dist/SheetContainer'
 import * as bcl from 'trc-analyze/collections'
 
 import { PluginShell } from 'trc-react/dist/PluginShell';
+import { CsvMatchInput } from 'trc-react/dist/CsvMatchInput';
+import { ISheetContents } from "trc-sheet/sheetContents";
 
 
 declare var _trcGlobal: IMajorState;
@@ -27,12 +29,13 @@ export class App extends React.Component<{}, {
             _ci: undefined,
             _mapping: {}
         };
-        
+
         this.renderBody1 = this.renderBody1.bind(this);
         this.onFullReset = this.onFullReset.bind(this);
+        this.onPartialReset = this.onPartialReset.bind(this);
     }
 
-       // Remove the XColor column. 
+    // Remove the XColor column. 
     private onFullReset() {
         var ok = confirm("Are you sure you want to reset all pins?");
         if (!ok) {
@@ -43,13 +46,36 @@ export class App extends React.Component<{}, {
         });
     }
 
-    
+    // Remove the XColor column. 
+    private onPartialReset(data: ISheetContents): Promise<void> {
+        var recIds: string[] = data["RecId"];
+        var count = recIds.length; // <CsvMatchInput> already verified this was present.
+        var ok = confirm("Are you sure you want to reset these " + count + "pins?");
+        if (!ok) {
+            return Promise.resolve();
+        }
+
+        return new Promise<void>((resolve, reject) => {
+            _trcGlobal.SheetOps.beginAdminOp(
+                admin => admin.postOpResetSomePins(recIds)
+            );
+            // Promise is never fulfilled. but beginAdminOp() will reload the page when done. 
+        });
+    }
+
+
 
     private renderBody1() {
-        {            
-            return <div>                                
-                <button onClick={this.onFullReset}>Reset all pins in this sheet!</button>            
-            </div>
+        {
+            return <div>
+                <h3>Option 1: Reset all pins</h3>
+                <button onClick={this.onFullReset}>Reset all pins in this sheet!</button>
+
+                <h3>Option 2: Reset specific pins</h3>
+                <div>Just reset the these recIds:</div>
+                <CsvMatchInput onSubmit={this.onPartialReset}></CsvMatchInput>
+
+            </div >
         }
     }
 

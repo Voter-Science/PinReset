@@ -16,7 +16,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "trc-analyze": "^1.6.0",
-    "trc-react": "^1.0.1",
+    "trc-react": "^1.0.2",
     "trc-sheet": "^1.12.0"
   },
   "devDependencies": {
